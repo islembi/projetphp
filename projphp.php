@@ -126,8 +126,12 @@ class Session {
 }
  
   session_start();
+//session_destroy();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" and isset($_POST["ajouter"])) {
     if(Session::get("utilisateur")){
         $list=Session::get("utilisateur");
         $newList = array_merge_recursive($list,array(array(test_input($_POST["name"]),test_input($_POST["prenom"]),test_input($_POST["email"]))));
@@ -135,16 +139,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }else{
         Session:: set("utilisateur", array(array(test_input($_POST["name"]),test_input($_POST["prenom"]),test_input($_POST["email"]))));
     }
-    // $list=  [test_input($_POST["name"]),test_input($_POST["email"]),test_input($_POST["website"])];
-    // $newList = array_merge_recursive($_SESSION["utilisateur"],$list->getAll());
-//    array_push($_SESSION["utilisateur"],$list);
-    // $_SESSION["utilisateur"] = $newList;
-    // $_SESSION=$list;
-//   $name = test_input($_POST["name"]);
-//   $email = test_input($_POST["email"]);
-//   $website = test_input($_POST["website"]);
+
  
 }
+
    //fonction de validation de formulaire 
 function test_input($data) {
   $data = trim($data);
@@ -157,18 +155,17 @@ function test_input($data) {
 ?>
 
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">  
-  Name: <input type="text" name="name">
+  Nom: <input type="text" name="name">
   <br><br>
   prenom: <input type="text" name="prenom">
   <br><br>
-  email: <input type="email" name="email">
+  Email: <input type="email" name="email">
   <br><br>
-  <input class="btn btn-primary" type="submit" name="ajouter" value="Submit">  
+  <input type="submit" name="ajouter" value="Submit">  
 </form>
               
                   <div class="modal-footer">
                      <button
-                     class="btn btn-primary"
                         type="button"
                         class="btn btn-secondary"
                         data-bs-dismiss="modal"
@@ -189,9 +186,8 @@ function test_input($data) {
                         <tr>
                            <th>Nom</th>
                            <th>Prenom</th>
-                           <th>email</th>
+                           <th>Emai</th>
                            <th>Supprimer</th>
-                           <th>Modifier</th>
                         </tr>
                         
                      </thead>
@@ -204,26 +200,48 @@ for($i = 0; $i < sizeof(Session::get("utilisateur")) ; $i = $i + 1){?>
     <td><?php print_r(Session::get("utilisateur")[$i][0]) ?></td>
     <td><?php print_r(Session::get("utilisateur")[$i][1]) ?></td>
     <td><?php print_r(Session::get("utilisateur")[$i][2]) ?></td>
-    <td><button type="submit" class="btn btn-primary">Supprimer</button></td>
     <td>
-      <button type="submit" class="btn btn-primary">Modifier</button>
-   </td>
+       <form method="post"  >
+       <button type="submit" name="supp" value=<?= $i ?> onclick="getId(this);">supprimer</button>
+       </form> 
+    </td>
+    <td> </td>
 </tr>
 <?php }} ?>
 
                      </tbody>
                   </table>
                </section>
+               
+               
+<?php
+if ($_SERVER["REQUEST_METHOD"] == "POST" and empty($_POST["supp"])) {
+    $index_ligne= $_POST["supp"];
+    //echo($index_ligne);
+   // var_dump($index_ligne);
+    unset($_SESSION["utilisateur"][$index_ligne]);
+}
+?>   
+
             </div>
          </div>
       </section>
 
       <!-- Optional JavaScript; choose one of the two! -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript">
 
+        function getId(element) {
+            var rowJavascript = element.parentNode.parentNode;
+            var rowjQuery = $(element).closest("tr");
+           <--alert("Row Index : " + (rowjQuery[0].rowIndex - 1));-->
+          document.getElementById(element).value = (rowjQuery[0].rowIndex - 1);
+        }      
+    </script>      
+      
       <!-- Option 1: Bootstrap Bundle with Popper -->
 
 
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
    </body>
 </html>
-
